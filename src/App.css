@@ -11,7 +11,7 @@
   margin-bottom: 32px;
 }
 .site-header__brand { margin-bottom: 4px; }
-.site-header__title { font-weight: 600; font-size: 0.95rem; text-decoration: underline; }
+.site-header__title { font-weight: 600; font-size: 1.5rem; text-decoration: underline; }
 .site-header__nav ul {
   list-style: disc;
   margin: 4px 0 0 20px;

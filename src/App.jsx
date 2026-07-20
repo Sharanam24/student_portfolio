@@ -5,10 +5,10 @@ import Footer from './components/Footer';
 import './App.css';
 
 const portfolioData = {
-  name: "Sharanam",
+  name: "Sharanam Katwala",
   tagline: "I am an AI & ML Engineering student specializing in Artificial Intelligence & Machine Learning.",
   email: "24aiml063@charusat.edu.in",
-  phone: "8490849102",
+  phone: "+91 8490849102",
   github: "https://github.com/Sharanam24",
   year: 2026,
   projects: [

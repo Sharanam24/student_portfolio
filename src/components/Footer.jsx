@@ -7,7 +7,7 @@ export default function Footer({ email = '', phone = '', github = '', year = '' 
         {phone && <p>Phone: <a href={`tel:${phone}`}>{phone}</a></p>}
         {github && <p>GitHub: <a href={github} target="_blank" rel="noreferrer">{github}</a></p>}
       </div>
-      {year !== '' && <p className="site-footer__copy">&copy; {year} Sharanam</p>}
+      {year !== '' && <p className="site-footer__copy">&copy; {year} Sharanam Katwala</p>}
     </footer>
   );
 }
