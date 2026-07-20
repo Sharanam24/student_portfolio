@@ -1,21 +1,46 @@
 *, *::before, *::after { box-sizing: border-box; }
 
+:root {
+  --bg: #f9fafb;
+  --card-bg: #ffffff;
+  --text: #111827;
+  --text-muted: #6b7280;
+  --accent: #2563eb;
+  --border: #e5e7eb;
+  --tag-bg: #e0e7ef;
+  --tag-text: #374151;
+  --nav-bg: #ffffff;
+  --hero-bg: #f3f4f6;
+}
+
+html.dark {
+  --bg: #111827;
+  --card-bg: #1f2937;
+  --text: #f9fafb;
+  --text-muted: #9ca3af;
+  --accent: #60a5fa;
+  --border: #374151;
+  --tag-bg: #374151;
+  --tag-text: #d1d5db;
+  --nav-bg: #1f2937;
+  --hero-bg: #1f2937;
+}
+
 body {
   margin: 0;
   font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
   font-size: 16px;
   line-height: 1.6;
-  color: #111;
-  background: #fff;
+  color: var(--text);
+  background: var(--bg);
+  transition: background 0.2s, color 0.2s;
 }
 
-a {
-  color: #0066cc;
-  text-decoration: underline;
-}
-a:hover { color: #004499; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-h1 { font-size: 2rem; margin: 0 0 12px; font-weight: 700; }
-h2 { font-size: 1.4rem; margin: 0 0 8px; font-weight: 700; }
-h3 { font-size: 1.05rem; margin: 0 0 6px; font-weight: 700; }
+h1, h2, h3 { margin: 0 0 12px; font-weight: 700; color: var(--text); }
+h1 { font-size: 2.4rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.05rem; }
 p  { margin: 0 0 8px; }
