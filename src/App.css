@@ -1,0 +1,71 @@
+.portfolio {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header */
+.site-header {
+  padding: 12px 0;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 32px;
+}
+.site-header__brand { margin-bottom: 4px; }
+.site-header__title { font-weight: 600; font-size: 0.95rem; text-decoration: underline; }
+.site-header__nav ul {
+  list-style: disc;
+  margin: 4px 0 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.site-header__nav a { font-size: 0.9rem; }
+
+/* Hero */
+.hero-section { margin-bottom: 48px; }
+.hero-tagline { font-size: 1rem; color: #333; margin-bottom: 8px; }
+.hero-link { font-size: 0.95rem; }
+
+/* Projects */
+.projects-section { margin-bottom: 48px; }
+.projects-intro { font-size: 0.95rem; color: #444; margin-bottom: 16px; }
+
+.filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 24px;
+}
+.filter-tab {
+  padding: 3px 10px;
+  font-size: 0.85rem;
+  border: 1px solid #aaa;
+  background: #fff;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.filter-tab--active {
+  background: #222;
+  color: #fff;
+  border-color: #222;
+}
+
+.project-list { display: flex; flex-direction: column; gap: 28px; }
+
+.project-card { border-bottom: 1px solid #eee; padding-bottom: 24px; }
+.project-card__title { font-size: 1rem; margin-bottom: 6px; }
+.project-card__desc { font-size: 0.9rem; color: #333; margin-bottom: 6px; }
+.project-card__tech { font-size: 0.85rem; color: #555; margin-bottom: 4px; }
+.project-card__link { font-size: 0.88rem; display: block; margin-bottom: 4px; }
+.project-card__category { font-size: 0.8rem; color: #666; }
+
+.site-footer {
+  border-top: 1px solid #ddd;
+  padding: 28px 0 40px;
+  font-size: 0.88rem;
+  color: #555;
+}
+.site-footer h2 { font-size: 1.2rem; margin-bottom: 12px; }
+.site-footer__details { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.site-footer__copy { margin-top: 16px; color: #999; font-size: 0.82rem; }
