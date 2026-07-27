@@ -73,7 +73,7 @@ export default function App() {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home data={portfolioData} />} />
-          <Route path="/projects" element={<ProjectsPage projects={portfolioData.projects} />} />
+          <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/contact" element={<Contact data={portfolioData} />} />
         </Routes>
       </main>

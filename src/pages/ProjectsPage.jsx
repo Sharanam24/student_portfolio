@@ -1,57 +1,65 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Spinner from '../components/Spinner';
+import ErrorMessage from '../components/ErrorMessage';
+import SearchInput from '../components/SearchInput';
+import RepoList from '../components/RepoList';
 
-const ALL_CATEGORIES = ['All', 'Web', 'AI / ML'];
+export default function ProjectsPage() {
+  const [repos, setRepos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [query, setQuery] = useState('');
 
-export default function ProjectsPage({ projects = [] }) {
-  const [active, setActive] = useState('All');
+  async function fetchRepos() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('https://api.github.com/users/Sharanam24/repos');
+      if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+      const data = await res.json();
+      setRepos(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  const filtered = active === 'All'
-    ? projects
-    : projects.filter(p => p.category.includes(active));
+  useEffect(() => {
+    fetchRepos();
+  }, []);
+
+  const filteredRepos = repos.filter(r =>
+    r.name.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
-    <section className="projects-section" aria-labelledby="projects-heading">
-      <h2 id="projects-heading">My Projects</h2>
-      <p className="projects-intro">Here are some of the professional and academic projects I have built.</p>
-
-      <div className="filter-tabs" role="group" aria-label="Filter by category">
-        {ALL_CATEGORIES.map(cat => (
-          <button
-            key={cat}
-            className={`filter-tab${active === cat ? ' filter-tab--active' : ''}`}
-            onClick={() => setActive(cat)}
-            aria-pressed={active === cat}
-          >
-            {cat}
-          </button>
-        ))}
+    <section className="github-page" aria-labelledby="github-heading">
+      <div className="github-page__hero">
+        <h2 id="github-heading">GitHub Repositories</h2>
+        {!loading && !error && (
+          <p className="github-page__subtitle">
+            Live data fetched from the GitHub API —{' '}
+            <strong>{repos.length}</strong> public{' '}
+            {repos.length === 1 ? 'repository' : 'repositories'}.
+          </p>
+        )}
       </div>
 
-      <div className="project-grid">
-        {filtered.map((project, i) => (
-          <article key={i} className="project-card">
-            <div className="project-card__categories">
-              {project.category.map(cat => (
-                <span key={cat} className="project-card__category">{cat}</span>
-              ))}
-            </div>
-            <h3 className="project-card__title">{project.title}</h3>
-            <p className="project-card__desc">{project.description}</p>
-            <div className="project-card__tags">
-              {project.tech.map(t => <span key={t} className="tag">{t}</span>)}
-            </div>
-            <a
-              href={project.repo}
-              className="project-card__link"
-              target="_blank"
-              rel="noreferrer"
-              aria-label={`View ${project.title} on GitHub`}
-            >
-              View Project Repository →
-            </a>
-          </article>
-        ))}
-      </div>
+      {loading && <Spinner />}
+
+      {!loading && error && (
+        <ErrorMessage message={error} onRetry={fetchRepos} />
+      )}
+
+      {!loading && !error && (
+        <>
+          <div className="github-page__search">
+            <SearchInput value={query} onChange={setQuery} />
+          </div>
+          <RepoList repos={filteredRepos} />
+        </>
+      )}
     </section>
   );
 }
