@@ -1,5 +1,11 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
+
+// ── CORS — allow requests from the Vite dev server (and any localhost port) ───
+app.use(cors({
+  origin: /^http:\/\/localhost(:\d+)?$/,
+}));
 
 // ── Parse JSON bodies ──────────────────────────────────────────────────────────
 // Without this, req.body is undefined on POST / PUT requests.
