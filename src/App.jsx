@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import ProjectsPage from './pages/ProjectsPage';
+import TasksAPIPage from './pages/TasksAPIPage';
 import Contact from './pages/Contact';
 import './App.css';
 
@@ -74,6 +75,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home data={portfolioData} />} />
           <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/tasks-api" element={<TasksAPIPage />} />
           <Route path="/contact" element={<Contact data={portfolioData} />} />
         </Routes>
       </main>

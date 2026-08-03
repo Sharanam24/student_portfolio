@@ -34,6 +34,11 @@ export default function NavBar({ name = '', sidebarOpen, onToggleSidebar, darkMo
                 </NavLink>
               </li>
               <li>
+                <NavLink to="/tasks-api" className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}>
+                  Tasks API
+                </NavLink>
+              </li>
+              <li>
                 <NavLink to="/contact" className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}>
                   Contact
                 </NavLink>
