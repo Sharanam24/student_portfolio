@@ -1,6 +1,25 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 const API = 'http://localhost:5000';
+
+// ── Toast notification ──────────────────────────────────────────────────────
+// type: 'success' | 'delete' | 'error'
+function Toast({ toasts }) {
+  return (
+    <div className="toast-container" aria-live="polite">
+      {toasts.map(t => (
+        <div key={t.id} className={`toast toast--${t.type}`}>
+          <span className="toast__icon">
+            {t.type === 'success' && '✅'}
+            {t.type === 'delete'  && '🗑️'}
+            {t.type === 'error'   && '❌'}
+          </span>
+          {t.message}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 // ── Backend status indicator ────────────────────────────────────────────────
 function BackendStatus({ online }) {
@@ -25,33 +44,46 @@ function TaskCard({ task, onDelete, onToggle, onEdit }) {
           {task.completed ? 'COMPLETED' : 'PENDING'}
         </span>
         <div className="task-card__actions">
-          <button className="task-btn task-btn--edit" onClick={() => onEdit(task)}>Edit</button>
-          <button
-            className="task-btn task-btn--toggle"
-            onClick={() => onToggle(task)}
-          >
+          <button className="task-btn task-btn--edit"   onClick={() => onEdit(task)}>Edit</button>
+          <button className="task-btn task-btn--toggle" onClick={() => onToggle(task)}>
             {task.completed ? 'Mark Pending' : 'Mark Done'}
           </button>
           <button className="task-btn task-btn--delete" onClick={() => onDelete(task.id)}>Delete</button>
         </div>
       </div>
-      {task.description && (
-        <p className="task-card__desc">{task.description}</p>
-      )}
+      {task.description && <p className="task-card__desc">{task.description}</p>}
     </div>
   );
 }
 
 // ── Main page ───────────────────────────────────────────────────────────────
 export default function TasksAPIPage() {
-  const [tasks, setTasks]       = useState([]);
-  const [online, setOnline]     = useState(false);
-  const [title, setTitle]       = useState('');
-  const [desc, setDesc]         = useState('');
-  const [editTask, setEditTask] = useState(null); // task being edited
-  const [error, setError]       = useState('');
+  const [tasks,    setTasks]    = useState([]);
+  const [online,   setOnline]   = useState(false);
+  const [title,    setTitle]    = useState('');
+  const [desc,     setDesc]     = useState('');
+  const [editTask, setEditTask] = useState(null);
+  const [error,    setError]    = useState('');
+  const [toasts,   setToasts]   = useState([]);
+  const toastTimer = useRef({});
 
-  // fetch all tasks and update online status
+  // ── Toast helpers ──────────────────────────────────────────────────────
+  function showToast(message, type = 'success') {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+    toastTimer.current[id] = setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+      delete toastTimer.current[id];
+    }, 3000);
+  }
+
+  // cleanup timers on unmount
+  useEffect(() => {
+    const timers = toastTimer.current;
+    return () => Object.values(timers).forEach(clearTimeout);
+  }, []);
+
+  // ── Fetch tasks ────────────────────────────────────────────────────────
   const fetchTasks = useCallback(async () => {
     try {
       const res = await fetch(`${API}/tasks`);
@@ -78,19 +110,24 @@ export default function TasksAPIPage() {
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
       setTitle(''); setDesc('');
-      fetchTasks();
+      await fetchTasks();
+      showToast('✔ Your data is successfully stored in the server!', 'success');
     } catch (err) {
       setError(err.message || 'Failed to create task.');
+      showToast('Failed to create task.', 'error');
     }
   }
 
   // ── Delete ──────────────────────────────────────────────────────────────
   async function handleDelete(id) {
     try {
-      await fetch(`${API}/tasks/${id}`, { method: 'DELETE' });
-      fetchTasks();
+      const res = await fetch(`${API}/tasks/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      await fetchTasks();
+      showToast('🗑 Your data is successfully deleted from the server!', 'delete');
     } catch {
       setError('Failed to delete task.');
+      showToast('Failed to delete task.', 'error');
     }
   }
 
@@ -103,13 +140,15 @@ export default function TasksAPIPage() {
         body: JSON.stringify({ completed: !task.completed }),
       });
       if (!res.ok) throw new Error();
-      fetchTasks();
+      await fetchTasks();
+      showToast('✔ Your data is successfully updated in the server!', 'success');
     } catch {
       setError('Failed to update task.');
+      showToast('Failed to update task.', 'error');
     }
   }
 
-  // ── Edit (inline: fill form, submit saves via PUT) ──────────────────────
+  // ── Edit ────────────────────────────────────────────────────────────────
   function handleEdit(task) {
     setEditTask(task);
     setTitle(task.title);
@@ -129,9 +168,11 @@ export default function TasksAPIPage() {
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error); }
       setEditTask(null); setTitle(''); setDesc('');
-      fetchTasks();
+      await fetchTasks();
+      showToast('✔ Your data is successfully updated in the server!', 'success');
     } catch (err) {
       setError(err.message || 'Failed to update task.');
+      showToast('Failed to update task.', 'error');
     }
   }
 
@@ -141,6 +182,9 @@ export default function TasksAPIPage() {
 
   return (
     <section className="tasks-page" aria-labelledby="tasks-heading">
+
+      {/* ── Toast stack ── */}
+      <Toast toasts={toasts} />
 
       <div className="tasks-page__hero">
         <h2 id="tasks-heading">Task Manager API</h2>
@@ -173,7 +217,6 @@ export default function TasksAPIPage() {
               onChange={e => setTitle(e.target.value)}
               required
             />
-
             <label className="tasks-form__label" htmlFor="task-desc">Description</label>
             <textarea
               id="task-desc"
@@ -183,9 +226,7 @@ export default function TasksAPIPage() {
               onChange={e => setDesc(e.target.value)}
               rows={4}
             />
-
             {error && <p className="tasks-form__error" role="alert">{error}</p>}
-
             <button type="submit" className="tasks-form__submit">
               {editTask ? '💾 Save Changes' : '+ Create Task'}
             </button>
