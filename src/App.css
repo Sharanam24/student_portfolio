@@ -795,3 +795,41 @@ html.dark .task-btn--delete:hover { background: #450a0a; }
   from { opacity: 1; transform: translateY(0);    }
   to   { opacity: 0; transform: translateY(16px); }
 }
+
+/* ── Task date fields ── */
+.tasks-form__date-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.tasks-form__date-group { display: flex; flex-direction: column; }
+
+.tasks-form__date-group .tasks-form__label { margin-top: 0; }
+
+input[type="date"].tasks-form__input {
+  color-scheme: light dark;
+}
+
+.task-card__dates {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+
+.task-date {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.task-date__label {
+  font-weight: 600;
+  color: var(--accent);
+}
