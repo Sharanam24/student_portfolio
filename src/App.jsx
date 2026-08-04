@@ -4,6 +4,7 @@ import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import ProjectsPage from './pages/ProjectsPage';
 import TasksAPIPage from './pages/TasksAPIPage';
+import CertificatesPage from './pages/CertificatesPage';
 import Contact from './pages/Contact';
 import './App.css';
 
@@ -74,9 +75,10 @@ export default function App() {
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home data={portfolioData} />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/tasks-api" element={<TasksAPIPage />} />
-          <Route path="/contact" element={<Contact data={portfolioData} />} />
+          <Route path="/projects"     element={<ProjectsPage />} />
+          <Route path="/tasks-api"    element={<TasksAPIPage />} />
+          <Route path="/certificates" element={<CertificatesPage />} />
+          <Route path="/contact"      element={<Contact data={portfolioData} />} />
         </Routes>
       </main>
       <footer className="site-footer">

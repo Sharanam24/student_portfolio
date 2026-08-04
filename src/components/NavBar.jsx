@@ -39,6 +39,11 @@ export default function NavBar({ name = '', sidebarOpen, onToggleSidebar, darkMo
                 </NavLink>
               </li>
               <li>
+                <NavLink to="/certificates" className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}>
+                  Certificates
+                </NavLink>
+              </li>
+              <li>
                 <NavLink to="/contact" className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}>
                   Contact
                 </NavLink>
