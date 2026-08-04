@@ -77,6 +77,18 @@ app.post('/tasks', (req, res) => {
   if (!title || typeof title !== 'string' || title.trim() === '') {
     return res.status(400).json({ error: 'title is required and must be a non-empty string' });
   }
+
+  const today = new Date().toISOString().split('T')[0];
+  if (startDate && startDate < today) {
+    return res.status(400).json({ error: 'startDate cannot be in the past' });
+  }
+  if (endDate && endDate < today) {
+    return res.status(400).json({ error: 'endDate cannot be in the past' });
+  }
+  if (startDate && endDate && endDate < startDate) {
+    return res.status(400).json({ error: 'endDate cannot be before startDate' });
+  }
+
   const task = {
     id: nextId++,
     title: title.trim(),
@@ -106,6 +118,18 @@ app.put('/tasks/:id', validateId, (req, res) => {
   if (completed   !== undefined) task.completed   = Boolean(completed);
   if (startDate   !== undefined) task.startDate   = startDate || null;
   if (endDate     !== undefined) task.endDate     = endDate   || null;
+
+  // validate dates are not in the past
+  const today = new Date().toISOString().split('T')[0];
+  if (task.startDate && task.startDate < today) {
+    return res.status(400).json({ error: 'startDate cannot be in the past' });
+  }
+  if (task.endDate && task.endDate < today) {
+    return res.status(400).json({ error: 'endDate cannot be in the past' });
+  }
+  if (task.startDate && task.endDate && task.endDate < task.startDate) {
+    return res.status(400).json({ error: 'endDate cannot be before startDate' });
+  }
 
   saveTasks();                          // ← persist immediately
   res.status(200).json(task);
