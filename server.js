@@ -73,7 +73,7 @@ app.get('/tasks', (req, res) => {
 
 // ── POST /tasks ────────────────────────────────────────────────────────────────
 app.post('/tasks', (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, startDate, endDate } = req.body;
   if (!title || typeof title !== 'string' || title.trim() === '') {
     return res.status(400).json({ error: 'title is required and must be a non-empty string' });
   }
@@ -82,10 +82,12 @@ app.post('/tasks', (req, res) => {
     title: title.trim(),
     description: description ? String(description).trim() : '',
     completed: false,
+    startDate: startDate || null,
+    endDate:   endDate   || null,
     createdAt: new Date().toISOString(),
   };
   tasks.push(task);
-  saveTasks();                          // ← persist immediately
+  saveTasks();
   res.status(201).json(task);
 });
 
@@ -94,14 +96,16 @@ app.put('/tasks/:id', validateId, (req, res) => {
   const task = tasks.find(t => t.id === req.taskId);
   if (!task) return res.status(404).json({ error: `Task with id ${req.taskId} not found` });
 
-  const { title, description, completed } = req.body;
+  const { title, description, completed, startDate, endDate } = req.body;
   if (title !== undefined) {
     if (typeof title !== 'string' || title.trim() === '')
       return res.status(400).json({ error: 'title must be a non-empty string' });
     task.title = title.trim();
   }
   if (description !== undefined) task.description = String(description).trim();
-  if (completed  !== undefined) task.completed = Boolean(completed);
+  if (completed   !== undefined) task.completed   = Boolean(completed);
+  if (startDate   !== undefined) task.startDate   = startDate || null;
+  if (endDate     !== undefined) task.endDate     = endDate   || null;
 
   saveTasks();                          // ← persist immediately
   res.status(200).json(task);
