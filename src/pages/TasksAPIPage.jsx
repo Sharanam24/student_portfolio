@@ -5,10 +5,14 @@ const API = 'http://localhost:5000';
 // ── Helpers ─────────────────────────────────────────────────────────────────
 function fmtDate(d) {
   if (!d) return null;
-  // Format ISO date string to DD/MM/YYYY for display
   const dt = new Date(d);
   if (isNaN(dt)) return d;
   return dt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+// today's date in YYYY-MM-DD for the min attribute on date inputs
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
 }
 
 // ── Toast notification ───────────────────────────────────────────────────────
@@ -279,6 +283,7 @@ export default function TasksAPIPage() {
                   id="task-start"
                   className="tasks-form__input"
                   type="date"
+                  min={todayStr()}
                   value={startDate}
                   onChange={e => setStartDate(e.target.value)}
                 />
@@ -289,6 +294,7 @@ export default function TasksAPIPage() {
                   id="task-end"
                   className="tasks-form__input"
                   type="date"
+                  min={todayStr()}
                   value={endDate}
                   onChange={e => setEndDate(e.target.value)}
                 />
