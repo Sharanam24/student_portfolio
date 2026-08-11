@@ -895,3 +895,46 @@ input[type="date"].tasks-form__input {
 
 .tasks-form__hint { font-size: 0.75rem; color: var(--text-muted); font-weight: 400; }
 .tasks-form__file { padding: 6px 10px; cursor: pointer; }
+
+/* ── Pagination ── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.pagination__btn {
+  padding: 6px 16px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pagination__btn:hover:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
+}
+
+.pagination__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pagination__info {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.tasks-page-badge {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
