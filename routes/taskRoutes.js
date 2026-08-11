@@ -16,11 +16,28 @@ function isValidId(id) {
   return mongoose.Types.ObjectId.isValid(id);
 }
 
-// ── GET /tasks — return all tasks ─────────────────────────────────────────────
+// ── GET /tasks — return tasks with server-side pagination ─────────────────────
+// Query params: ?page=1&limit=5
+// Returns: { tasks, totalTasks, totalPages, currentPage }
 router.get('/', async (req, res, next) => {
   try {
-    const tasks = await Task.find();   // fetch every document in the tasks collection
-    res.status(200).json(tasks);
+    const page  = Math.max(1, parseInt(req.query.page)  || 1);
+    const limit = Math.max(1, parseInt(req.query.limit) || 5);
+    const skip  = (page - 1) * limit;
+
+    // Run both queries in parallel for efficiency
+    const [tasks, totalTasks] = await Promise.all([
+      Task.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Task.countDocuments(),
+    ]);
+
+    res.status(200).json({
+      tasks,
+      totalTasks,
+      totalPages:  Math.ceil(totalTasks / limit),
+      currentPage: page,
+      limit,
+    });
   } catch (err) {
     next(err);
   }
