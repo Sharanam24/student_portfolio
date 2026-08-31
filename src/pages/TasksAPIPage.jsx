@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const API   = 'http://localhost:5000';
 const LIMIT = 5; // tasks per page
@@ -113,6 +114,7 @@ function TaskCard({ task, onDelete, onToggle, onEdit }) {
 
 // ── Main page ────────────────────────────────────────────────────────────────
 export default function TasksAPIPage() {
+  const navigate = useNavigate();
   const [tasks,      setTasks]      = useState([]);
   const [online,     setOnline]     = useState(false);
   const [title,      setTitle]      = useState('');
@@ -147,8 +149,21 @@ export default function TasksAPIPage() {
   // ── Server-side paginated fetch ───────────────────────────────────────────
   // Sends ?page=N&limit=5 → receives { tasks, totalTasks, totalPages, currentPage }
   const fetchTasks = useCallback(async (page = 1) => {
+    const token = localStorage.getItem('task_manager_token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
     try {
-      const res = await fetch(`${API}/tasks?page=${page}&limit=${LIMIT}`);
+      const res = await fetch(`${API}/tasks?page=${page}&limit=${LIMIT}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.status === 401) {
+        window.dispatchEvent(new Event('auth-unauthorized'));
+        return;
+      }
       if (!res.ok) throw new Error();
       const data = await res.json();
 
@@ -181,13 +196,25 @@ export default function TasksAPIPage() {
     e.preventDefault();
     setError('');
     if (!title.trim()) { setError('Task title is required.'); return; }
+    const token = localStorage.getItem('task_manager_token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
     try {
       const res = await fetch(`${API}/tasks`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ title: title.trim(), description: desc.trim(), startDate: startDate || null, endDate: endDate || null }),
       });
-      if (!res.ok) { const d = await res.json(); throw new Error(d.error || d.errors?.title); }
+      if (res.status === 401) {
+        window.dispatchEvent(new Event('auth-unauthorized'));
+        return;
+      }
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || d.message || d.errors?.title); }
       resetForm();
       // Go to page 1 to see the newest task (sorted desc by createdAt)
       setCurrentPage(1);
@@ -201,8 +228,22 @@ export default function TasksAPIPage() {
 
   // ── Delete ────────────────────────────────────────────────────────────────
   async function handleDelete(id) {
+    const token = localStorage.getItem('task_manager_token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
     try {
-      const res = await fetch(`${API}/tasks/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API}/tasks/${id}`, { 
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.status === 401) {
+        window.dispatchEvent(new Event('auth-unauthorized'));
+        return;
+      }
       if (!res.ok) throw new Error();
       // If last item on page > 1, go back one page
       const newPage = tasks.length === 1 && currentPage > 1 ? currentPage - 1 : currentPage;
@@ -216,13 +257,25 @@ export default function TasksAPIPage() {
 
   // ── Toggle completed ──────────────────────────────────────────────────────
   async function handleToggle(task) {
+    const token = localStorage.getItem('task_manager_token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
     const taskId = task._id || task.id;
     try {
       const res = await fetch(`${API}/tasks/${taskId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ completed: !task.completed }),
       });
+      if (res.status === 401) {
+        window.dispatchEvent(new Event('auth-unauthorized'));
+        return;
+      }
       if (!res.ok) throw new Error();
       await fetchTasks(currentPage);
       showToast('✔ Your data is successfully updated in the server!', 'success');
@@ -245,14 +298,26 @@ export default function TasksAPIPage() {
     e.preventDefault();
     setError('');
     if (!title.trim()) { setError('Task title is required.'); return; }
+    const token = localStorage.getItem('task_manager_token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
     const taskId = editTask._id || editTask.id;
     try {
       const res = await fetch(`${API}/tasks/${taskId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ title: title.trim(), description: desc.trim(), startDate: startDate || null, endDate: endDate || null }),
       });
-      if (!res.ok) { const d = await res.json(); throw new Error(d.error || d.errors?.title); }
+      if (res.status === 401) {
+        window.dispatchEvent(new Event('auth-unauthorized'));
+        return;
+      }
+      if (!res.ok) { const d = await res.json(); throw new Error(d.error || d.message || d.errors?.title); }
       setEditTask(null); resetForm();
       await fetchTasks(currentPage);
       showToast('✔ Your data is successfully updated in the server!', 'success');
