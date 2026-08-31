@@ -27,6 +27,7 @@ const fs        = require('fs');
 const multer    = require('multer');
 
 const taskRoutes    = require('./routes/taskRoutes');
+const authRoutes    = require('./routes/authRoutes');
 const errorHandler  = require('./middleware/errorHandler');
 
 const app  = express();
@@ -66,7 +67,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// ── STEP 8: Mount task CRUD routes (now backed by MongoDB) ────────────────────
+// ── Mount routes ─────────────────────────────────────────────────────────────
+// Auth routes (public) — register, login, /me
+app.use('/api/auth', authRoutes);
+
+// Task CRUD routes (protected by authMiddleware inside taskRoutes.js)
+app.use('/api/tasks', taskRoutes);
+
+// Legacy unversioned routes kept for Practical 4/5/6 backward compatibility
 app.use('/tasks', taskRoutes);
 
 // ────────────────────────────────────────────────────────────────────────────

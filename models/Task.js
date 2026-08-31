@@ -17,7 +17,8 @@ const taskSchema = new mongoose.Schema({
   title: {
     type:     String,
     required: [true, 'Title is required'],
-    trim:     true,   // automatically strips leading/trailing whitespace
+    trim:     true,
+    maxlength: [200, 'Title cannot exceed 200 characters'],
   },
 
   description: {
@@ -27,10 +28,9 @@ const taskSchema = new mongoose.Schema({
 
   completed: {
     type:    Boolean,
-    default: false,   // every new task starts as incomplete
+    default: false,
   },
 
-  // Supplementary: priority field restricted to an enum
   priority: {
     type:    String,
     enum:    {
@@ -40,19 +40,21 @@ const taskSchema = new mongoose.Schema({
     default: 'medium',
   },
 
-  startDate: {
-    type: Date,
-    default: null,
-  },
+  startDate: { type: Date, default: null },
+  endDate:   { type: Date, default: null },
 
-  endDate: {
-    type: Date,
-    default: null,
+  // P7: Associate each task with the user who created it.
+  // Optional (sparse) so old Practical 5/6 documents without a user field
+  // still load without validation errors.
+  user: {
+    type:   mongoose.Schema.Types.ObjectId,
+    ref:    'User',
+    sparse: true,   // allows null/missing values in old documents
   },
 
   createdAt: {
     type:    Date,
-    default: Date.now,  // Date.now (not Date.now()) — Mongoose calls it at insert time
+    default: Date.now,
   },
 });
 
@@ -63,7 +65,9 @@ taskSchema.pre('save', function (next) {
   if (this.title) {
     this.title = this.title.trim();
   }
-  next();
+  if (typeof next === 'function') {
+    next();
+  }
 });
 
 // ── Export the model ───────────────────────────────────────────────────────────
