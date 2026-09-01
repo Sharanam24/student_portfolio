@@ -1,6 +1,6 @@
 import { Link, NavLink } from 'react-router-dom';
 
-export default function NavBar({ name = '', sidebarOpen, onToggleSidebar, darkMode, onToggleDark }) {
+export default function NavBar({ name = '', sidebarOpen, onToggleSidebar, darkMode, onToggleDark, isAuthenticated, userEmail, onLogout }) {
   return (
     <header className="site-header">
       <div className="site-header__inner">
@@ -34,10 +34,47 @@ export default function NavBar({ name = '', sidebarOpen, onToggleSidebar, darkMo
                 </NavLink>
               </li>
               <li>
+                <NavLink to="/tasks-api" className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}>
+                  Tasks API
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/certificates" className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}>
+                  Certificates
+                </NavLink>
+              </li>
+              <li>
                 <NavLink to="/contact" className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}>
                   Contact
                 </NavLink>
               </li>
+              {isAuthenticated ? (
+                <>
+                  <li className="nav-user-item">
+                    <span className="nav-user-badge" title={userEmail}>
+                      👤 {userEmail.split('@')[0]}
+                    </span>
+                  </li>
+                  <li>
+                    <button onClick={onLogout} className="nav-logout-btn">
+                      Logout
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <NavLink to="/login" className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}>
+                      Login
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="/register" className={({ isActive }) => isActive ? 'nav-link nav-link--active' : 'nav-link'}>
+                      Register
+                    </NavLink>
+                  </li>
+                </>
+              )}
             </ul>
           </nav>
 

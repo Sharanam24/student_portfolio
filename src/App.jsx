@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Home from './pages/Home';
 import ProjectsPage from './pages/ProjectsPage';
+import TasksAPIPage from './pages/TasksAPIPage';
+import CertificatesPage from './pages/CertificatesPage';
 import Contact from './pages/Contact';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import './App.css';
 
 export const portfolioData = {
@@ -55,11 +59,38 @@ export const portfolioData = {
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem('task_manager_token') || '');
+  const [userEmail, setUserEmail] = useState(localStorage.getItem('task_manager_email') || '');
+  const navigate = useNavigate();
 
   // Apply dark class to <html> so CSS vars work globally
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
   }, [darkMode]);
+
+  const handleLoginSuccess = (newToken, email) => {
+    setToken(newToken);
+    setUserEmail(email);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('task_manager_token');
+    localStorage.removeItem('task_manager_email');
+    setToken('');
+    setUserEmail('');
+    navigate('/login');
+  };
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      handleLogout();
+    };
+
+    window.addEventListener('auth-unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('auth-unauthorized', handleUnauthorized);
+    };
+  }, []);
 
   return (
     <div className="portfolio">
@@ -69,12 +100,19 @@ export default function App() {
         onToggleSidebar={() => setSidebarOpen(prev => !prev)}
         darkMode={darkMode}
         onToggleDark={() => setDarkMode(prev => !prev)}
+        isAuthenticated={!!token}
+        userEmail={userEmail}
+        onLogout={handleLogout}
       />
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home data={portfolioData} />} />
-          <Route path="/projects" element={<ProjectsPage />} />
-          <Route path="/contact" element={<Contact data={portfolioData} />} />
+          <Route path="/projects"     element={<ProjectsPage />} />
+          <Route path="/tasks-api"    element={<TasksAPIPage />} />
+          <Route path="/certificates" element={<CertificatesPage />} />
+          <Route path="/contact"      element={<Contact data={portfolioData} />} />
+          <Route path="/login"        element={<LoginPage onLoginSuccess={handleLoginSuccess} />} />
+          <Route path="/register"     element={<RegisterPage />} />
         </Routes>
       </main>
       <footer className="site-footer">
